@@ -25,19 +25,13 @@ Parameters:
 
 Resources:
 
-  TAHApi:
+  BasicAWSApiGateway:
     Type: AWS::Serverless::Api
     Properties:
-      Name: !Sub "tahmarketplace-api"
-      StageName: !Ref APIStage
-      MethodSettings:
-        - LoggingLevel: INFO
-          ResourcePath: '/*' # allows for logging on any resource
-          HttpMethod: '*' # allows for logging on any method
-      TracingEnabled: true
-      Variables:
-        LAMBDA_ALIAS: !Ref Stage
-        
+      Name: "tahmarketplace-api"
+      StageName: Stage
+
+
   # Layer:
   #   Type: 'AWS::Serverless::LayerVersion'
   #   Properties:
@@ -70,4 +64,18 @@ Resources:
             Path: /hello
             Method: ANY
             RestApiId:
-              Ref: TAHApi
+              Ref: BasicAWSApiGateway
+
+Outputs:
+  BasicAWSApiGateway:
+    Description: 'API Gateway endpoint URL for Staging stage for Hello World function'
+    Value: !Sub 'https://${BasicAWSApiGateway}.execute-api.${AWS::Region}.amazonaws.com/Staging/hello/'
+  BasicAWSApiGatewayRestApiId:
+    Description: 'API Gateway ARN for Basic AWS API Gateway'
+    Value: !Ref BasicAWSApiGateway
+    Export:
+      Name: BasicAWSApiGateway-RestApiId
+  BasicAWSApiGatewayRootResourceId:
+    Value: !GetAtt BasicAWSApiGateway.RootResourceId
+    Export:
+      Name: BasicAWSApiGateway-RootResourceId
