@@ -84,7 +84,7 @@ Resources:
           Properties:
             Path: /login/invoke
             Method: GET
-            RestApiId: e6j59psxkl
+            RestApiId:
               Ref: BasicAWSApiGateway
 
 Outputs:
