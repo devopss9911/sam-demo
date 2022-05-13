@@ -1,14 +1,13 @@
 version: 0.2
 phases:
- install:
-   runtime-versions:
-     java: corretto11
  build:
    commands:
-     - sam package
-       --template-file template.yaml
-       --output-template-file package.yaml
-       --s3-bucket ap4l-sam-artifacts-bucket
+     - aws cloudformation package 
+     --template-file template.yaml 
+     --s3-bucket $S3_BUCKET 
+     --output-template-file package.yaml
 artifacts:
+ type: zip
  files:
+   - template.yaml
    - package.yaml

@@ -14,7 +14,7 @@ Parameters:
     Default: Dev
   Region:
     Type: String
-    Default: us-east-2
+    Default: ap-south-1
   AWSEnv:
     Type: String
     Default: Dev
@@ -38,33 +38,36 @@ Resources:
       Variables:
         LAMBDA_ALIAS: !Ref Stage
         
-  Layer:
-    Type: 'AWS::Serverless::LayerVersion'
-    Properties:
-      LayerName: bs4-python36
-      Description: Beautiful Soup 4 Layer for Python 3.6
-      ContentUri: ./Layers
-      CompatibleRuntimes:
-        - python3.6
-      RetentionPolicy: Retain
-    Metadata:
-      BuildMethod: python3.9 | makefile
+  # Layer:
+  #   Type: 'AWS::Serverless::LayerVersion'
+  #   Properties:
+  #     LayerName: bs4-python36
+  #     Description: Beautiful Soup 4 Layer for Python 3.6
+  #     ContentUri: ./Layers
+  #     CompatibleRuntimes:
+  #       - python3.6
+  #     RetentionPolicy: Retain
+  #   Metadata:
+  #     BuildMethod: python3.9 | makefile
 
   CreateActivityFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./hello-world
-      Handler: temp.lambda_handler
+      CodeUri: ./functions
+      Handler: app.lambda_handler
       MemorySize: 1024
-      Layers: !Ref bs4Layer
+      # Layers: !Ref bs4Layer
+      # Role: arn:asd3434234234
       Environment:
         Variables:
           TABLE: !Ref Table
           REGION: !Ref Region
           AWSENV: !Ref AWSEnv
       Events:
-        HelloWorld:
+        TAHApi:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
             Path: /hello
-            Method: get
+            Method: ANY
+            RestApiId:
+              Ref: TAHApi
