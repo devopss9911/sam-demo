@@ -46,6 +46,7 @@ Resources:
   CreateActivityFunction:
     Type: AWS::Serverless::Function
     Properties:
+      FunctionName: String
       CodeUri: ./functions
       Handler: app.lambda_handler
       MemorySize: 1024
@@ -63,6 +64,28 @@ Resources:
             Method: ANY
             RestApiId:
               Ref: BasicAWSApiGateway
+
+  MyFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: punk
+      CodeUri: ./functions
+      Handler: app.lambda_handler
+      MemorySize: 1024
+      # Layers: !Ref bs4Layer
+      # Role: arn:asd3434234234
+      Environment:
+        Variables:
+          REGION: !Ref Region
+          AWSENV: !Ref AWSEnv
+      Events:
+        TAHApi:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /hello
+            Method: ANY
+            RestApiId: e6j59psxkl
+
 
 Outputs:
   BasicAWSApiGateway:
