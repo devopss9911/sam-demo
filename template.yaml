@@ -28,7 +28,7 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       Name: "tahmarketplace-api"
-      StageName: Stage
+      StageName: dev
 
 
   # Layer:
