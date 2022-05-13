@@ -1,0 +1,14 @@
+version: 0.2
+phases:
+ install:
+   runtime-versions:
+     java: corretto11
+ build:
+   commands:
+     - sam package
+       --template-file template.yaml
+       --output-template-file package.yaml
+       --s3-bucket ap4l-sam-artifacts-bucket
+artifacts:
+ files:
+   - package.yaml
