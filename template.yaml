@@ -6,7 +6,6 @@ Globals:
   Function:
     Timeout: 30
     Runtime: python3.9
-    Handler: temp.lambda_handler
 
 Parameters:
   User:
@@ -54,7 +53,6 @@ Resources:
       # Role: arn:asd3434234234
       Environment:
         Variables:
-          TABLE: !Ref Table
           REGION: !Ref Region
           AWSENV: !Ref AWSEnv
       Events:
