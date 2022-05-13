@@ -46,7 +46,7 @@ Resources:
   CreateActivityFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: String
+      FunctionName: rock
       CodeUri: ./functions
       Handler: app.lambda_handler
       MemorySize: 1024
@@ -82,10 +82,10 @@ Resources:
         TAHApi:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
-            Path: /hello
-            Method: ANY
+            Path: /login/invoke
+            Method: GET
             RestApiId: e6j59psxkl
-
+              Ref: BasicAWSApiGateway
 
 Outputs:
   BasicAWSApiGateway:
