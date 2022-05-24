@@ -31,18 +31,18 @@ Resources:
       StageName: dev
 
 
-  # Layer:
-  #   Type: 'AWS::Serverless::LayerVersion'
-  #   Properties:
-  #     LayerName: bs4-python36
-  #     Description: Beautiful Soup 4 Layer for Python 3.6
-  #     ContentUri: ./Layers
-  #     CompatibleRuntimes:
-  #       - python3.6
-  #     RetentionPolicy: Retain
-  #   Metadata:
-  #     BuildMethod: python3.9 | makefile
-
+  Layer:
+    Type: 'AWS::Serverless::LayerVersion'
+    Properties:
+      LayerName: crud
+      Description: Beautiful Soup 4 Layer for Python 3.6
+      ContentUri: ./Layers/crud
+      CompatibleRuntimes:
+        - python3.9
+      RetentionPolicy: Retain
+    Metadata:
+      BuildMethod: python3.9 | makefile
+      
   CreateActivityFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -50,7 +50,7 @@ Resources:
       CodeUri: ./functions
       Handler: app.lambda_handler
       MemorySize: 1024
-      # Layers: !Ref bs4Layer
+      Layers: !Ref Layer
       # Role: arn:asd3434234234
       Environment:
         Variables:
@@ -72,7 +72,7 @@ Resources:
       CodeUri: ./functions
       Handler: app.lambda_handler
       MemorySize: 1024
-      # Layers: !Ref bs4Layer
+      Layers: !Ref Layer
       # Role: arn:asd3434234234
       Environment:
         Variables:
