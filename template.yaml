@@ -63,8 +63,7 @@ Resources:
           Properties:
             Path: /hello
             Method: ANY
-            RestApiId:
-              - cf267zb4wk
+            RestApiId: "cf267zb4wk"
 
   MyFunction:
     Type: AWS::Serverless::Function
@@ -86,8 +85,7 @@ Resources:
           Properties:
             Path: /login/invoke
             Method: GET
-            RestApiId:
-              - cf267zb4wk
+            RestApiId: "cf267zb4wk"
 
 Outputs:
   BasicAWSApiGateway:
