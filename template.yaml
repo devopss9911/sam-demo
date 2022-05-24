@@ -41,7 +41,7 @@ Resources:
         - python3.9
       RetentionPolicy: Retain
     Metadata:
-      BuildMethod: python3.9 | makefile
+      BuildMethod: Makefile
       
   CreateActivityFunction:
     Type: AWS::Serverless::Function
