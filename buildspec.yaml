@@ -5,7 +5,6 @@ phases:
         python: 3.8
   build:
     commands:
-      - echo "Preparing Template"
       - sam package --template-file template.yaml --s3-bucket $S3_BUCKET --output-template-file package.yaml
 artifacts:
   files:
