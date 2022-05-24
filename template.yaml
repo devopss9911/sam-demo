@@ -50,7 +50,8 @@ Resources:
       CodeUri: ./functions
       Handler: app.lambda_handler
       MemorySize: 1024
-      Layers: !Ref Layer
+      Layers: 
+        - !Ref Layer
       # Role: arn:asd3434234234
       Environment:
         Variables:
@@ -72,7 +73,8 @@ Resources:
       CodeUri: ./functions
       Handler: app.lambda_handler
       MemorySize: 1024
-      Layers: !Ref Layer
+      Layers: 
+        - !Ref Layer
       # Role: arn:asd3434234234
       Environment:
         Variables:
