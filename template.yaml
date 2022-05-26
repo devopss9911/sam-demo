@@ -63,7 +63,8 @@ Resources:
           Properties:
             Path: /hello
             Method: ANY
-            RestApiId: "cf267zb4wk"
+            RestApiId:
+              Ref: BasicAWSApiGateway
 
   MyFunction:
     Type: AWS::Serverless::Function
@@ -85,8 +86,8 @@ Resources:
           Properties:
             Path: /login/invoke
             Method: GET
-            RestApiId: "cf267zb4wk"
-
+            RestApiId:
+              Ref: BasicAWSApiGateway
 Outputs:
   BasicAWSApiGateway:
     Description: 'API Gateway endpoint URL for Staging stage for Hello World function'
