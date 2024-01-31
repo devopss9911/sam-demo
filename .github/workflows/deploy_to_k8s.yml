@@ -1,0 +1,97 @@
+name: Deploy image to EKS
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        type: choice
+        description: Environment
+        options:
+        - stage
+
+      imageTag: 
+        description: 'Squire backend image tag to deploy'
+        required: true
+        default: 'latest' 
+        type: string
+jobs:
+    deploy_to_kubernetes:
+      runs-on: ubuntu-latest
+      container:
+        image: public.ecr.aws/p4l5a9q1/github_actions_utils:latest
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: "us-east-1"
+
+      steps:
+        - name: Chosen image tag
+          run: echo ${{ github.event.inputs.imageTag }}
+
+        - name: Checkout repository
+          uses: actions/checkout@v2
+
+        - name: Set Environment Properties
+          run: |
+            if [ "${{ github.event.inputs.env }}" = "dev-2" ]; then
+            echo "ENV_AWS_SECRET_NAME=backend/dev-2" >> $GITHUB_ENV
+            echo "ENV_CLUSTER=dev-cluster" >> $GITHUB_ENV
+            echo "ENV_NAMESPACE=dev-2" >> $GITHUB_ENV
+            echo "ENV_URL=dev-2.gosquire.xyz" >> $GITHUB_ENV
+
+            elif [ "${{ github.event.inputs.env }}" = "dev" ]; then
+            echo "ENV_AWS_SECRET_NAME=backend/dev" >> $GITHUB_ENV
+            echo "ENV_CLUSTER=dev-cluster" >> $GITHUB_ENV
+            echo "ENV_NAMESPACE=dev" >> $GITHUB_ENV
+            echo "ENV_URL=dev.gosquire.xyz" >> $GITHUB_ENV
+
+            elif [ "${{ github.event.inputs.env }}" = "prod" ]; then
+            echo "ENV_AWS_SECRET_NAME=backend/prod" >> $GITHUB_ENV
+            echo "ENV_CLUSTER=prod-cluster" >> $GITHUB_ENV
+            echo "ENV_NAMESPACE=default" >> $GITHUB_ENV
+            echo "ENV_URL=app.gosquire.xyz" >> $GITHUB_ENV
+            fi
+
+
+        - name: Chosen Environment
+          run: echo Chosen environment ${{ env.ENV_CLUSTER }}
+
+        - name: Create kubeconfig to authentication with kubernetes
+          run: aws eks update-kubeconfig --name "${{ env.ENV_CLUSTER }}"
+
+        - name: install jq
+          run: apt-get -y install jq
+
+        - name: create kubernetes secret containing environment variables
+          run: |
+            aws secretsmanager get-secret-value --secret-id "${{ env.ENV_AWS_SECRET_NAME }}" --query SecretString --output text | jq -r "to_entries|map(\"\(.key)=\(.value|tostring)\")|.[]" > env
+
+        - name: Update deployment params and deploy app
+          run: | 
+            sed -i 's/squire:latest/squire:${{ github.event.inputs.imageTag }}/g' kubernetes/deployment.yaml >> kubernetes/deployment.yaml
+            sed -i 's/app.gosquire.xyz/${{ env.ENV_URL }}/g' kubernetes/deployment.yaml >> kubernetes/deployment.yaml
+            sed -i 's/namespace: default/namespace: ${{ env.ENV_NAMESPACE }}/g' kubernetes/deployment.yaml >> kubernetes/deployment.yaml
+            sed -i 's/name: default/name: ${{ env.ENV_NAMESPACE }}/g' kubernetes/deployment.yaml >> kubernetes/deployment.yaml
+            sed -i 's/alb.ingress.kubernetes.io\/group.name: prod-cluster/alb.ingress.kubernetes.io\/group.name: ${{ env.ENV_CLUSTER }}/g' kubernetes/deployment.yaml >> kubernetes/deployment.yaml
+            cat kubernetes/deployment.yaml
+            kubectl apply -f kubernetes/deployment.yaml      
+
+        - name: Delete and create new secret with envrionment variables
+          run: |
+            kubectl create secret generic env --from-env-file=env --dry-run=client
+            kubectl delete secret env -n "${{ env.ENV_NAMESPACE }}" --ignore-not-found
+            kubectl create secret generic env --from-env-file=env -n "${{ env.ENV_NAMESPACE }}"
+            kubectl rollout restart deployment squire-backend -n ${{ env.ENV_NAMESPACE }}
+
+        - name: Check deployment status
+          run: kubectl rollout status -w deployment squire-backend -n ${{ env.ENV_NAMESPACE }} --timeout 120s
+
+        - name: Send slack notification on failure
+          if:  ${{ failure() }}
+          uses: rtCamp/action-slack-notify@v2
+          env:
+            SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_BACKEND }}
+            SLACK_COLOR: ${{ job.status }}
+            MSG_MINIMAL: actions url
+            SLACK_TITLE: "Backend Deployment Status"
+            SLACK_MESSAGE: ':bangbang: Backend deployment *FAILED* with image tag:* ${{ github.event.inputs.imageTag }}* in environment:* ${{ github.event.inputs.env }}*  :bangbang:*' 
+     
