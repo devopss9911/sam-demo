@@ -8,7 +8,12 @@ on:
         options:
         - stage
         - devp
-
+        
+      imageTag: 
+        description: 'Squire backend image tag to deploy'
+        required: true
+        default: 'latest' 
+        type: string
 
 env:
   AWS_REGION: us-east-1
