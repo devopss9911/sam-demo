@@ -23,8 +23,8 @@ env:
   ECS_TASK_DEFINITION: ./task-definition-stage.json
   CONTAINER_NAME: gosquire-stage-task
 
-permissions:
-  contents: read
+# permissions:
+#   contents: read
 
 jobs:
     deploy:
