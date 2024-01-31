@@ -8,7 +8,7 @@ on:
         options:
         - stage
         - devp
-        
+
       imageTag: 
         description: 'Squire backend image tag to deploy'
         required: true
@@ -23,31 +23,28 @@ env:
   ECS_TASK_DEFINITION: ./task-definition-stage.json
   CONTAINER_NAME: gosquire-stage-task
 
+permissions:
+  contents: read
+
 jobs:
     deploy:
       runs-on: ubuntu-latest
       name: Deploy
-      # container:
-      #   image: public.ecr.aws/p4l5a9q1/github_actions_utils:latest
-      #   env:
-      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #     AWS_DEFAULT_REGION: "us-east-1"
 
       steps:
         - name: Configure AWS credentials
-          uses: aws-actions/configure-aws-credentials@v4
+          uses: aws-actions/configure-aws-credentials@v1
           with:
-            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            AWS_DEFAULT_REGION: "us-east-1"
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
 
         - name: Chosen image tag
           run: echo ${{ github.event.inputs.imageTag }}
 
         - name: Login to ECR
           id: login-ecr
-          uses: aws-actions/amazon-ecr-login@v2
+          uses: aws-actions/amazon-ecr-login@v1
         
         - name: Fill in the new image ID in the Amazon ECS task definition
           id: task-def
