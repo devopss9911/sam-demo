@@ -1,4 +1,4 @@
-name: Deploy to Amazon EKS
+name: new-release
 
 on:
   push:
