@@ -23,7 +23,7 @@ env:
   ECR_REPOSITORY: httpd-test
   ECS_SERVICE: httpd
   ECS_CLUSTER: stage-test
-  ECS_TASK_DEFINITION: ./task-definitions.json
+  ECS_TASK_DEFINITION: task-definitions.json
   CONTAINER_NAME: httpd
 
 jobs:
