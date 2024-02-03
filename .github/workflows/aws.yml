@@ -15,7 +15,9 @@ on:
         required: true
         default: 'latest' 
         type: string
-
+permissions:
+      id-token: write
+      contents: read
 env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: httpd-test
