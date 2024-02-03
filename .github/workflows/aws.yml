@@ -18,7 +18,7 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  ECR_REPOSITORY: registry.hub.docker.com
+  ECR_REPOSITORY: httpd-test
   ECS_SERVICE: httpd
   ECS_CLUSTER: stage-test
   ECS_TASK_DEFINITION: ./task-definitions.json
@@ -45,7 +45,9 @@ jobs:
 
         - name: Login to ECR
           id: login-ecr
-          uses: aws-actions/amazon-ecr-login@v1
+          uses: aws-actions/amazon-ecr-login@v2
+          with:
+            mask-password: 'false'
         
         - name: Fill in the new image ID in the Amazon ECS task definition
           id: task-def
